@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Evaluación cap. 5: transferencia de masa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+/* ======= CONFIGURACIÓN DOCENTE (editar aquí) ======= */
+</style>
+<script>
+  // Duración en minutos
+  const DURACION_MIN = 60;
+  // true = muestra a los estudiantes un recuadro con las ecuaciones de los tres modelos
+  const MOSTRAR_FORMULARIO = false;
+</script>
+<style>
+:root{
+  --bg:#f2f3ef; --panel:#fbfbf8; --ink:#1c2830; --muted:#5b6870; --line:#cfd5cc;
+  --oxide:#6f8c5a; --jander:#a87410; --cgb:#2c6a9a; --cv:#8a3d6b;
+  --ok:#2f7a4a; --bad:#b0362f; --warn-bg:#f6efdc; --warn-line:#d8c38c;
+  --serif:"Source Serif 4", Georgia, serif; --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13191d; --panel:#1a2227; --ink:#e2e7e1; --muted:#9aa7ad; --line:#2e3b42;
+    --oxide:#86a872; --jander:#e2ad42; --cgb:#6ea9d8; --cv:#d888b8;
+    --ok:#6cc08a; --bad:#e3756d; --warn-bg:#2a261a; --warn-line:#6a5a2c;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13191d; --panel:#1a2227; --ink:#e2e7e1; --muted:#9aa7ad; --line:#2e3b42;
+  --oxide:#86a872; --jander:#e2ad42; --cgb:#6ea9d8; --cv:#d888b8;
+  --ok:#6cc08a; --bad:#e3756d; --warn-bg:#2a261a; --warn-line:#6a5a2c;
+}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.6}
+h1,h2,h3{font-family:var(--sans);line-height:1.2;letter-spacing:-.01em}
+.wrap{max-width:820px;margin:0 auto;padding:0 22px}
+:focus-visible{outline:2px solid var(--cgb);outline-offset:2px}
+
+header.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);border-bottom:1px solid var(--line)}
+.barin{display:flex;align-items:center;gap:16px;height:58px}
+.barin .t{flex:1;font-family:var(--sans);font-weight:600;font-size:.95rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.barin .t small{color:var(--muted);font-weight:400}
+#clock{font-family:var(--sans);font-variant-numeric:tabular-nums;font-weight:700;font-size:1.25rem;padding:4px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel)}
+#clock.low{color:var(--bad);border-color:var(--bad)}
+
+.cover{padding:46px 0 20px}
+.cover h1{font-size:clamp(1.9rem,4.5vw,2.8rem);margin:.15em 0 .3em;letter-spacing:-.02em}
+.meta{font-family:var(--sans);font-size:.9rem;color:var(--muted)}
+.rules{border-left:4px solid var(--oxide);padding:2px 0 2px 16px;margin:20px 0}
+.rules li{margin:.2em 0}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+@media (max-width:640px){.fields{grid-template-columns:1fr}}
+label.f{font-family:var(--sans);font-size:.85rem;display:block}
+input.txt, input.num, textarea{font:inherit;font-family:var(--sans);font-size:1rem;width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);margin-top:4px}
+input.num{width:11em;font-variant-numeric:tabular-nums}
+textarea{min-height:190px;font-family:var(--serif);line-height:1.55}
+.btn{font-family:var(--sans);font-size:.92rem;font-weight:600;border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:8px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.err{font-family:var(--sans);font-size:.88rem;color:var(--bad);min-height:1.3em}
+
+section.part{border-top:1px solid var(--line);padding:34px 0 10px}
+.parthead{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.parthead h2{font-size:1.45rem;margin:0}
+.pts{font-family:var(--sans);font-size:.85rem;color:var(--muted);white-space:nowrap}
+.q{margin:24px 0;padding-bottom:6px}
+.qn{font-family:var(--sans);font-weight:700;margin-right:.3em}
+.opts{list-style:none;padding:0;margin:10px 0 0}
+.opts li{margin:6px 0}
+.opts label{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--panel);cursor:pointer}
+.opts input{margin-top:.35em;accent-color:var(--ink)}
+.opts label:has(input:checked){border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.prob{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:20px 0}
+.prob h3{margin:0 0 6px;font-size:1.05rem}
+.data{font-family:var(--sans);font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+.sub{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:12px 0;padding-top:10px;border-top:1px dashed var(--line)}
+.sub .lbl{flex:1 1 320px}
+.unit{font-family:var(--sans);font-size:.9rem;color:var(--muted)}
+.hint{font-family:var(--sans);font-size:.82rem;color:var(--muted)}
+.formulas{background:var(--warn-bg);border:1px solid var(--warn-line);border-radius:10px;padding:10px 16px;margin:16px 0;font-size:.95rem}
+.formulas p{margin:.3em 0}
+.finish{padding:30px 0 60px;border-top:1px solid var(--line);margin-top:20px}
+
+/* results */
+.score{font-family:var(--sans);font-size:2.6rem;font-weight:700;font-variant-numeric:tabular-nums;margin:.1em 0}
+table.res{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:.86rem;font-variant-numeric:tabular-nums}
+table.res th,table.res td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.res th{color:var(--muted);font-weight:600}
+td.ok{color:var(--ok);font-weight:600} td.bad{color:var(--bad);font-weight:600}
+.tablewrap{overflow-x:auto}
+.openans{white-space:pre-wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:.95rem}
+.hidden{display:none !important}
+#teacher{background:var(--panel);border:2px dashed var(--muted);border-radius:12px;padding:18px;margin:30px 0}
+footer{border-top:1px solid var(--line);padding:24px 0 40px;font-family:var(--sans);font-size:.82rem;color:var(--muted)}
+footer a{color:var(--ink)}
+@media print{
+  header.bar,.noprint,#teacher{display:none !important}
+  body{background:#fff;color:#000;font-size:12pt}
+  .prob,.opts label,.openans{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap barin">
+    <div class="t">Evaluación de cinética <small>Cap. 5 · Transferencia de masa</small></div>
+    <div id="clock" aria-live="off">60:00</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= PORTADA ================= -->
+<div class="cover" id="cover">
+  <div class="meta">Cinética de procesos metalúrgicos · 6.º semestre · Ingeniería Metalúrgica</div>
+  <h1>Transferencia de masa en fase fluida: capa límite, disolución y números adimensionales</h1>
+  <div class="meta">Ray &amp; Ray, <i>Kinetics of Metallurgical Processes</i>, cap. 5, §5.1, §5.2 y §5.4 · Duración: <span id="durTxt">60</span> min · Nota sobre 5,0</div>
+  <ul class="rules">
+    <li>Tres partes: selección múltiple (1,5), problemas numéricos (2,5) y una pregunta de análisis (1,0).</li>
+    <li>Los datos numéricos dependen de tu código: cada estudiante tiene valores distintos.</li>
+    <li>Puedes usar calculadora. Escribe los resultados numéricos con al menos 3 cifras significativas; se acepta coma o punto decimal.</li>
+    <li>Tus respuestas se guardan en este navegador mientras trabajas. Si la página se recarga, vuelve a ingresar el mismo código para continuar.</li>
+    <li>Al terminar el tiempo la evaluación se envía sola. Al finalizar, descarga tus respuestas y entrégalas como indique el docente.</li>
+  </ul>
+  <div class="fields">
+    <label class="f">Nombre completo<input class="txt" id="sName" autocomplete="name"></label>
+    <label class="f">Código estudiantil<input class="txt" id="sCode" inputmode="numeric" autocomplete="off"></label>
+  </div>
+  <div class="err" id="startErr"></div>
+  <button class="btn" id="startBtn">Comenzar evaluación</button>
+</div>
+
+<!-- ================= EXAMEN ================= -->
+<div id="exam" class="hidden">
+  <p class="meta" id="whoLine"></p>
+
+  <div class="formulas hidden" id="formBox">
+    <b style="font-family:var(--sans)">Formulario</b>
+    <p>Flujo en la capa límite: J = (D/δ)(C<sub>s</sub> − C<sub>o</sub>) = h<sub>m</sub>(C<sub>s</sub> − C<sub>o</sub>)</p>
+    <p>Disolución: −ln(1 − α) = kt, con k = DA/(δV)</p>
+    <p>N<sub>Sh</sub> = h<sub>m</sub>d/D = d/δ · N<sub>Re</sub> = vd/ν · N<sub>Sc</sub> = ν/D</p>
+    <p>Esfera: N<sub>Sh</sub> = 2 + 0,6·N<sub>Re</sub><sup>1/2</sup>·N<sub>Sc</sub><sup>1/3</sup></p>
+  </div>
+
+  <section class="part" id="partA">
+    <div class="parthead"><h2>Parte A. Selección múltiple</h2><span class="pts">6 × 0,25 = 1,5</span></div>
+    <p class="hint" style="font-size:.9rem">Una sola respuesta correcta por pregunta.</p>
+    <div id="mcq"></div>
+  </section>
+
+  <section class="part" id="partB">
+    <div class="parthead"><h2>Parte B. Problemas</h2><span class="pts">2,5</span></div>
+    <div id="probs"></div>
+  </section>
+
+  <section class="part" id="partC">
+    <div class="parthead"><h2>Parte C. Análisis</h2><span class="pts">1,0 · calificación manual</span></div>
+    <div class="q">
+      <p><span class="qn">C1.</span>En un laboratorio se lixivia un mineral en un reactor agitado. La velocidad inicial de disolución aumenta con la agitación entre 0 y 400 rpm y luego permanece constante hasta 1000 rpm. A 600 rpm se mide una energía de activación aparente de 65 kJ/mol.</p>
+      <p>Explica: (i) qué etapa controla la velocidad por debajo y por encima de 400 rpm, y por qué la agitación deja de tener efecto; (ii) qué indica el valor de 65 kJ/mol y qué valor aproximado esperarías si repitieras la medición a 100 rpm; y (iii) qué harías para aumentar la productividad del proceso por encima de 400 rpm, justificando físicamente.</p>
+      <p class="hint">Extensión sugerida: 120–200 palabras. No se requieren ecuaciones, pero puedes usarlas.</p>
+      <textarea id="openC1" aria-label="Respuesta C1"></textarea>
+    </div>
+  </section>
+
+  <div class="finish noprint">
+    <p class="hint">Revisa tus respuestas antes de enviar. Después de finalizar ya no podrás modificarlas.</p>
+    <button class="btn" id="finishBtn">Finalizar y enviar</button>
+  </div>
+</div>
+
+<!-- ================= RESULTADOS ================= -->
+<div id="results" class="hidden" style="padding:36px 0 50px">
+  <div class="meta" id="resWho"></div>
+  <h2 style="font-size:1.5rem;margin:.4em 0 0">Resultado de las partes A y B</h2>
+  <div class="score" id="resScore"></div>
+  <p class="hint" id="resNote"></p>
+  <div class="noprint" style="display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 24px">
+    <button class="btn" id="dlBtn">Descargar respuestas (.txt)</button>
+    <button class="btn ghost" id="printBtn">Imprimir o guardar PDF</button>
+  </div>
+  <div class="tablewrap"><table class="res" id="resTable"></table></div>
+  <h3>Respuesta C1 (calificación manual)</h3>
+  <div class="openans" id="resOpen"></div>
+</div>
+
+<!-- ================= CLAVE DOCENTE (#docente) ================= -->
+<div id="teacher" class="hidden noprint">
+  <h2 style="margin-top:0;font-size:1.2rem">Clave del docente</h2>
+  <div id="tLock">
+    <p class="hint">Vista protegida. Escribe la contraseña del docente.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+      <label class="f" style="flex:1 1 200px">Contraseña<input class="txt" id="tPass" type="password" autocomplete="off"></label>
+      <button class="btn" id="tUnlock">Entrar</button>
+    </div>
+    <div class="err" id="tErr"></div>
+  </div>
+  <div id="tPanel" class="hidden">
+    <p class="hint">Escribe el código de un estudiante para ver sus datos y las respuestas esperadas.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+      <label class="f" style="flex:1 1 200px">Código<input class="txt" id="tCode"></label>
+      <button class="btn" id="tBtn">Ver clave</button>
+      <button class="btn ghost" id="tLockBtn">Cerrar vista docente</button>
+    </div>
+    <div id="tOut" style="margin-top:14px"></div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap">Elaborado por <b style="color:var(--ink)">Sergio Blanco, PhD</b> · <a href="https://www.linkedin.com/in/sergio-blanco-professor/" target="_blank" rel="noopener">LinkedIn</a></div>
+</footer>
+
+<script>
+(function(){
+"use strict";
+const $ = id => document.getElementById(id);
+const fmt = (x,d) => isFinite(x) ? x.toFixed(d).replace(".", ",") : "–";
+
+/* ---------- RNG por código ---------- */
+function hashStr(s){ let h=2166136261>>>0; for(const c of s){ h^=c.charCodeAt(0); h=Math.imul(h,16777619)>>>0; } return h; }
+function rng(seed){ let a=seed>>>0; return ()=>{ a=(a+0x6D2B79F5)>>>0; let t=a; t=Math.imul(t^(t>>>15),t|1); t^=t+Math.imul(t^(t>>>7),t|61); return ((t^(t>>>14))>>>0)/4294967296; }; }
+const pick = (r,arr) => arr[Math.floor(r()*arr.length)];
+function shuffle(r,arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+const sci = (x,d) => { const e=Math.floor(Math.log10(x)); const m=x/Math.pow(10,e); return fmt(m,d)+"×10"+String(e).replace("-","⁻").replace(/\d/g,c=>"⁰¹²³⁴⁵⁶⁷⁸⁹"[c]); };
+
+/* ---------- banco de selección múltiple ---------- */
+const MCQ = [
+ {id:"A1", q:"Al aumentar la agitación del líquido, la disolución de un sólido controlada por la capa límite se acelera porque:",
+  ok:"Disminuye el espesor efectivo δ y aumenta el coeficiente h<sub>m</sub> = D/δ.",
+  bad:["Aumenta el coeficiente de difusión D del soluto en el líquido.",
+       "Aumenta la concentración de saturación C<sub>s</sub> en la interfase.",
+       "La difusión turbulenta pasa a operar dentro de la capa límite."]},
+ {id:"A2", q:"Junto a la superficie del sólido, (v<sub>x</sub>)<sub>x=0</sub> = 0 y (E<sub>D</sub>)<sub>x=0</sub> = 0. ¿Qué se concluye?",
+  ok:"A través de la capa límite el soluto se transporta solo por difusión molecular.",
+  bad:["La convección y la turbulencia del seno no influyen en la velocidad de disolución.",
+       "No existe gradiente de concentración junto a la superficie.",
+       "La velocidad de disolución no depende del coeficiente de difusión."]},
+ {id:"A3", q:"Un sólido se disuelve con control por la capa límite, con A, V, δ y C<sub>s</sub> constantes. ¿Qué ley cinética sigue?",
+  ok:"Primer orden: −ln(1 − α) = kt, con k = DA/(δV).",
+  bad:["Ley parabólica: α² = kt.","Orden cero: α = kt.","Ecuación de Jander: [1 − (1 − α)<sup>1/3</sup>]² = kt."]},
+ {id:"A4", q:"La velocidad de disolución aumenta con la agitación hasta cierto valor y luego deja de cambiar. Por encima de ese valor:",
+  ok:"Controla la liberación del soluto en la superficie, y la velocidad solo aumenta subiendo la temperatura.",
+  bad:["La capa límite desaparece y la velocidad se vuelve infinita.","Sigue controlando la capa límite, pero con un D menor.","La reacción pasa a ser de orden cero respecto al soluto."]},
+ {id:"A5", q:"El número de Sherwood de una esfera de diámetro d vale 20. Esto significa que:",
+  ok:"El espesor efectivo de la capa límite es d/20.",
+  bad:["La velocidad del fluido es 20 veces su viscosidad cinemática.","El flujo es turbulento, porque Sh > 2.","La viscosidad cinemática es 20 veces el coeficiente de difusión."]},
+ {id:"A6", q:"Una disolución controlada por la capa límite alcanza 50 % en 2 h. ¿Cuándo se completa (α = 1)?",
+  ok:"Nunca: con cinética de primer orden el tiempo para α = 1 es infinito.",
+  bad:["A las 4 h.","A las 6 h.","A las 8 h."]}
+];
+
+/* ---------- datos personalizados ---------- */
+function makeExam(code){
+  const r = rng(hashStr("eval5|"+code.trim()));
+  const mcq = MCQ.map(q=>{ const opts=shuffle(r,[q.ok,...q.bad]); return {id:q.id,q:q.q,opts,okIdx:opts.indexOf(q.ok)}; });
+  // B1: disolución de primer orden
+  const a1=pick(r,[0.30,0.40,0.50,0.60]), t1=pick(r,[10,15,20,30]), aT=pick(r,[0.90,0.95,0.99]), f=pick(r,[0.50,0.40,0.80,0.25]);
+  const k1=-Math.log(1-a1)/t1, tT=-Math.log(1-aT)/k1;
+  const B1={a1,t1,aT,f,ans:{a:k1,b:tT,c:tT*f}};
+  // B2: soluto que sale del metal (tipo Ejemplo 5.2)
+  const C0=pick(r,[0.40,0.50,0.60,0.80]), Ci=pick(r,[0.001,0.002,0.005]), D=pick(r,[3e-5,5e-5,8e-5]), dl=pick(r,[2e-3,3e-3,4e-3]), VA=pick(r,[2.0,2.5,4.0]), tm=pick(r,[3,5,8]);
+  const k2=D/dl/VA, C=Ci+(C0-Ci)*Math.exp(-k2*tm*60);
+  const B2={C0,Ci,D,dl,VA,tm,ans:{a:k2,b:C,c:Math.log(20)/k2/60}};
+  // B3: números adimensionales
+  const dmm=pick(r,[0.5,1.0,2.0,3.0]), v=pick(r,[2,5,10,20]), Dw=pick(r,[0.8e-5,1.0e-5,1.5e-5]), nu=0.010;
+  const Re=v*(dmm/10)/nu, Sc=nu/Dw, Sh=2+0.6*Math.sqrt(Re)*Math.cbrt(Sc);
+  const B3={dmm,v,Dw,nu,ans:{a:Re,b:Sh,c:(dmm/10)/Sh*1e4}};
+  return {mcq,B1,B2,B3};
+}
+
+/* ---------- ítems calificables ---------- */
+function items(E){
+  const L=[];
+  E.mcq.forEach((q,i)=>L.push({id:q.id,label:`A${i+1}`,type:"mcq",pts:0.25,ans:q.okIdx,show:q.opts[q.okIdx].replace(/<\/?su[bp]>/g,"")}));
+  L.push({id:"B1a",label:"B1(a)",type:"num",pts:0.25,ans:E.B1.ans.a,tol:0.03,d:4,unit:"min⁻¹"});
+  L.push({id:"B1b",label:"B1(b)",type:"num",pts:0.30,ans:E.B1.ans.b,tol:0.03,d:1,unit:"min"});
+  L.push({id:"B1c",label:"B1(c)",type:"num",pts:0.30,ans:E.B1.ans.c,tol:0.03,d:1,unit:"min"});
+  L.push({id:"B2a",label:"B2(a)",type:"num",pts:0.20,ans:E.B2.ans.a,tol:0.02,d:5,unit:"s⁻¹"});
+  L.push({id:"B2b",label:"B2(b)",type:"num",pts:0.35,ans:E.B2.ans.b,tol:0.03,d:4,unit:"%"});
+  L.push({id:"B2c",label:"B2(c)",type:"num",pts:0.30,ans:E.B2.ans.c,tol:0.03,d:2,unit:"min"});
+  L.push({id:"B3a",label:"B3(a)",type:"num",pts:0.20,ans:E.B3.ans.a,tol:0.02,d:1,unit:""});
+  L.push({id:"B3b",label:"B3(b)",type:"num",pts:0.30,ans:E.B3.ans.b,tol:0.03,d:1,unit:""});
+  L.push({id:"B3c",label:"B3(c)",type:"num",pts:0.30,ans:E.B3.ans.c,tol:0.04,d:1,unit:"µm"});
+  return L;
+}
+
+/* ---------- render ---------- */
+function numInput(id,unit){ return `<input class="num" id="${id}" inputmode="decimal" autocomplete="off" aria-label="${id}"> <span class="unit">${unit}</span>`; }
+function renderExam(E){
+  $("mcq").innerHTML = E.mcq.map((q,i)=>`<div class="q"><p><span class="qn">A${i+1}.</span>${q.q}</p><ul class="opts">${
+    q.opts.map((o,j)=>`<li><label><input type="radio" name="${q.id}" value="${j}"><span>${String.fromCharCode(97+j)}) ${o}</span></label></li>`).join("")}</ul></div>`).join("");
+  const {B1,B2,B3}=E;
+  $("probs").innerHTML = `
+  <div class="prob"><h3>B1. Disolución con control por la capa límite <span class="pts">0,85</span></h3>
+    <p>Un sólido se disuelve en un tanque agitado. La velocidad está controlada por la transferencia de masa a través de la capa límite, y A, V, δ y C<sub>s</sub> se mantienen constantes. Se mide α = <span class="data">${fmt(B1.a1,2)}</span> a los <span class="data">${B1.t1} min</span>.</p>
+    <div class="sub"><span class="lbl">(a) Calcula la constante k de la ley −ln(1 − α) = kt.</span>${numInput("B1a","min⁻¹")}</div>
+    <div class="sub"><span class="lbl">(b) ¿Cuánto tiempo se necesita para alcanzar α = ${fmt(B1.aT,2)}?</span>${numInput("B1b","min")}</div>
+    <div class="sub"><span class="lbl">(c) Se aumenta la agitación y el espesor efectivo δ baja al <span class="data">${Math.round(B1.f*100)} %</span> de su valor original; la capa límite sigue controlando. ¿Cuánto tiempo se necesita ahora para α = ${fmt(B1.aT,2)}?</span>${numInput("B1c","min")}</div>
+  </div>
+  <div class="prob"><h3>B2. Transferencia de un soluto del metal a la escoria <span class="pts">0,85</span></h3>
+    <p>Un soluto pasa del acero líquido a la escoria, con control por la capa límite del lado del metal (como en el Ejemplo 5.2). Concentración inicial en el metal: <span class="data">${fmt(B2.C0,2)} %</span>; concentración en la interfase (constante): <span class="data">${fmt(B2.Ci,3)} %</span>; D = <span class="data">${sci(B2.D,1)} cm²/s</span>; δ = <span class="data">${sci(B2.dl,1)} cm</span>; V/A = <span class="data">${fmt(B2.VA,1)} cm</span>.</p>
+    <div class="sub"><span class="lbl">(a) Calcula la constante (D/δ)·(A/V).</span>${numInput("B2a","s⁻¹")}</div>
+    <div class="sub"><span class="lbl">(b) Concentración del soluto en el metal a los ${B2.tm} min.</span>${numInput("B2b","%")}</div>
+    <div class="sub"><span class="lbl">(c) ¿En cuánto tiempo la diferencia C − C<sub>i</sub> cae al 5 % de su valor inicial?</span>${numInput("B2c","min")}</div>
+  </div>
+  <div class="prob"><h3>B3. Números adimensionales <span class="pts">0,80</span></h3>
+    <p>Una partícula esférica de <span class="data">${fmt(B3.dmm,1)} mm</span> de diámetro se disuelve en agua que fluye a su alrededor con velocidad relativa <span class="data">${B3.v} cm/s</span>. Viscosidad cinemática del agua: <span class="data">ν = 0,010 cm²/s</span>; coeficiente de difusión del soluto: <span class="data">D = ${sci(B3.Dw,1)} cm²/s</span>. Usa N<sub>Sh</sub> = 2 + 0,6·N<sub>Re</sub><sup>1/2</sup>·N<sub>Sc</sub><sup>1/3</sup>.</p>
+    <div class="sub"><span class="lbl">(a) Número de Reynolds.</span>${numInput("B3a","")}</div>
+    <div class="sub"><span class="lbl">(b) Número de Sherwood.</span>${numInput("B3b","")}</div>
+    <div class="sub"><span class="lbl">(c) Espesor efectivo de la capa límite, δ.</span>${numInput("B3c","µm")}</div>
+  </div>`;
+}
+
+/* ---------- estado y almacenamiento ---------- */
+let S=null, E=null, timer=null;
+const KEY = c => "eval5:"+c.trim();
+function save(){ if(!S) return; collect(); try{ localStorage.setItem(KEY(S.code), JSON.stringify(S)); }catch(e){} }
+function load(code){ try{ const v=localStorage.getItem(KEY(code)); return v?JSON.parse(v):null; }catch(e){ return null; } }
+function collect(){
+  if(!S||S.done) return;
+  const a={};
+  document.querySelectorAll("#exam input.num").forEach(i=>a[i.id]=i.value);
+  document.querySelectorAll("#exam input[type=radio]:checked").forEach(i=>a[i.name]=i.value);
+  a.openC1=$("openC1").value;
+  S.ans=a;
+}
+function restore(){
+  const a=S.ans||{};
+  Object.entries(a).forEach(([k,v])=>{
+    const el=$(k); if(el&&(el.tagName==="TEXTAREA"||el.classList.contains("num"))){ el.value=v; return; }
+    const r=document.querySelector(`#exam input[type=radio][name="${k}"][value="${v}"]`); if(r) r.checked=true;
+  });
+}
+
+/* ---------- reloj ---------- */
+function tick(){
+  const left = S.start + DURACION_MIN*60000 - Date.now();
+  const s = Math.max(0,Math.round(left/1000));
+  $("clock").textContent = String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+  $("clock").classList.toggle("low", s<=300);
+  if(s<=0){ finish(true); }
+}
+
+/* ---------- inicio ---------- */
+$("durTxt").textContent = DURACION_MIN;
+$("clock").textContent = String(DURACION_MIN).padStart(2,"0")+":00";
+if(MOSTRAR_FORMULARIO) $("formBox").classList.remove("hidden");
+$("startBtn").addEventListener("click",()=>{
+  const name=$("sName").value.trim(), code=$("sCode").value.trim();
+  if(name.length<3||code.length<3){ $("startErr").textContent="Escribe tu nombre completo y tu código estudiantil."; return; }
+  const prev = load(code);
+  S = prev || {name, code, start:Date.now(), ans:{}, done:false};
+  if(prev && prev.name!==name) S.name = name;
+  E = makeExam(code);
+  $("cover").classList.add("hidden");
+  if(S.done){ showResults(); return; }
+  renderExam(E); restore();
+  $("exam").classList.remove("hidden");
+  $("whoLine").textContent = `${S.name} · código ${S.code}`;
+  document.querySelector("#exam").addEventListener("input",save);
+  document.querySelector("#exam").addEventListener("change",save);
+  save(); tick(); timer=setInterval(tick,1000);
+  window.scrollTo(0,0);
+});
+window.addEventListener("beforeunload",e=>{ if(S&&!S.done){ save(); e.preventDefault(); e.returnValue=""; } });
+
+/* ---------- calificación ---------- */
+const parseNum = s => { if(s==null) return NaN; s=String(s).trim().replace(/\s/g,"").replace(",","."); return s===""?NaN:Number(s); };
+function grade(){
+  const L=items(E); let total=0;
+  const rows=L.map(it=>{
+    const raw=S.ans[it.id]; let ok=false, given="";
+    if(it.type==="mcq"){
+      ok = raw!=null && +raw===it.ans;
+      if(raw!=null){ given = it.id.startsWith("A") ? String.fromCharCode(97+ +raw)+")" : ["Difusión","Químico"][+raw]; } else given="(sin respuesta)";
+    } else {
+      const v=parseNum(raw); given = raw?String(raw):"(sin respuesta)";
+      ok = isFinite(v) && Math.abs(v-it.ans) <= it.tol*Math.abs(it.ans);
+    }
+    if(ok) total+=it.pts;
+    const exp = it.type==="mcq" ? (it.id.startsWith("A") ? String.fromCharCode(97+it.ans)+") "+it.show : it.show) : fmt(it.ans,it.d)+(it.unit?" "+it.unit:"");
+    return {it,ok,given,exp};
+  });
+  return {rows,total};
+}
+function finish(auto){
+  if(!S||S.done) return;
+  if(!auto && !confirm("¿Finalizar y enviar? Ya no podrás cambiar tus respuestas.")) return;
+  collect(); S.done=true; S.end=Date.now(); S.auto=!!auto;
+  try{ localStorage.setItem(KEY(S.code), JSON.stringify(S)); }catch(e){}
+  clearInterval(timer);
+  showResults();
+}
+$("finishBtn").addEventListener("click",()=>finish(false));
+
+function showResults(){
+  const G=grade();
+  $("exam").classList.add("hidden"); $("cover").classList.add("hidden"); $("results").classList.remove("hidden");
+  $("clock").textContent="—";
+  const mins = S.end ? Math.round((S.end-S.start)/60000) : "–";
+  $("resWho").textContent = `${S.name} · código ${S.code} · tiempo usado: ${mins} min${S.auto?" (envío automático por tiempo)":""}`;
+  $("resScore").textContent = fmt(G.total,2)+" / 4,0";
+  $("resNote").textContent = "La parte C (1,0) la califica el docente. Nota final = A + B + C, sobre 5,0.";
+  $("resTable").innerHTML = `<tr><th>Ítem</th><th>Tu respuesta</th><th>Esperada</th><th>Puntos</th></tr>`+
+    G.rows.map(r=>`<tr><td>${r.it.label}</td><td>${esc(r.given)}</td><td>${esc(r.exp)}</td><td class="${r.ok?"ok":"bad"}">${r.ok?fmt(r.it.pts,2):"0,00"}</td></tr>`).join("");
+  $("resOpen").textContent = (S.ans&&S.ans.openC1) ? S.ans.openC1 : "(sin respuesta)";
+  window.scrollTo(0,0);
+  $("dlBtn").onclick = ()=>download(G);
+  $("printBtn").onclick = ()=>window.print();
+}
+const esc = s => String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function download(G){
+  const lines=[
+    "EVALUACIÓN CAP. 5 — TRANSFERENCIA DE MASA EN FASE FLUIDA",
+    `Nombre: ${S.name}`, `Código: ${S.code}`,
+    `Inicio: ${new Date(S.start).toLocaleString("es-CO")}`, `Fin: ${new Date(S.end||Date.now()).toLocaleString("es-CO")}${S.auto?" (automático)":""}`,
+    "", `Puntaje A+B: ${fmt(G.total,2)} / 4,0`, "",
+    "Ítem | Respuesta | Esperada | Puntos",
+    ...G.rows.map(r=>`${r.it.label} | ${r.given} | ${r.exp} | ${r.ok?fmt(r.it.pts,2):"0,00"}`),
+    "", "C1 (calificación manual):", (S.ans&&S.ans.openC1)||"(sin respuesta)", "",
+    `Verificación: ${hashStr(S.code+"|"+fmt(G.total,2)+"|"+S.start).toString(36)}`
+  ];
+  const blob=new Blob([lines.join("\n")],{type:"text/plain;charset=utf-8"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob);
+  a.download=`eval5_${S.code}.txt`; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* ---------- clave docente ---------- */
+/* Contraseña del docente: solo se guarda su hash SHA-256, nunca el texto. */
+const DOCENTE_HASH = "e96725ed07033f9219de8130aca12c18631e4e0d0f23b3eee70788b538cb595c";
+async function sha256(txt){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+let tFails = 0;
+async function tryUnlock(){
+  const err=$("tErr");
+  if(!(window.crypto && crypto.subtle)){ err.textContent="Este navegador no permite verificar la contraseña. Abre la página por https (por ejemplo, desde GitHub Pages)."; return; }
+  if(tFails>=5){ err.textContent="Demasiados intentos. Recarga la página para intentar de nuevo."; return; }
+  const h = await sha256($("tPass").value);
+  $("tPass").value="";
+  if(h===DOCENTE_HASH){ err.textContent=""; $("tLock").classList.add("hidden"); $("tPanel").classList.remove("hidden"); $("tCode").focus(); }
+  else { tFails++; err.textContent="Contraseña incorrecta."; }
+}
+if(location.hash==="#docente"){
+  $("teacher").classList.remove("hidden");
+  $("tUnlock").addEventListener("click",tryUnlock);
+  $("tPass").addEventListener("keydown",e=>{ if(e.key==="Enter") tryUnlock(); });
+  $("tLockBtn").addEventListener("click",()=>{ $("tOut").innerHTML=""; $("tCode").value=""; $("tPanel").classList.add("hidden"); $("tLock").classList.remove("hidden"); });
+  $("tBtn").addEventListener("click",()=>{
+    const code=$("tCode").value.trim(); if(!code) return;
+    const X=makeExam(code), L=items(X);
+    const data = `B1: α₁ = ${fmt(X.B1.a1,2)}, t₁ = ${X.B1.t1} min, α objetivo = ${fmt(X.B1.aT,2)}, δ nuevo = ${Math.round(X.B1.f*100)} %<br>
+      B2: C₀ = ${fmt(X.B2.C0,2)} %, Cᵢ = ${fmt(X.B2.Ci,3)} %, D = ${sci(X.B2.D,1)} cm²/s, δ = ${sci(X.B2.dl,1)} cm, V/A = ${fmt(X.B2.VA,1)} cm, t = ${X.B2.tm} min<br>
+      B3: d = ${fmt(X.B3.dmm,1)} mm, v = ${X.B3.v} cm/s, D = ${sci(X.B3.Dw,1)} cm²/s, ν = 0,010 cm²/s`;
+    $("tOut").innerHTML = `<p class="hint" style="font-size:.9rem">${data}</p><div class="tablewrap"><table class="res"><tr><th>Ítem</th><th>Respuesta esperada</th><th>Tolerancia</th><th>Puntos</th></tr>${
+      L.map(it=>`<tr><td>${it.label}</td><td>${esc(it.type==="mcq"?(it.id.startsWith("A")?String.fromCharCode(97+it.ans)+") "+it.show:it.show):fmt(it.ans,it.d)+(it.unit?" "+it.unit:""))}</td><td>${it.tol?"±"+(it.tol*100)+" %":"—"}</td><td>${fmt(it.pts,2)}</td></tr>`).join("")
+    }</table></div>
+    <h3 style="font-size:1rem">Rúbrica C1 (1,0)</h3>
+    <ul style="font-size:.95rem">
+      <li><b>0,35</b> (i) Por debajo de 400 rpm controla la transferencia de masa en la capa límite: agitar reduce δ y aumenta h<sub>m</sub>. Por encima, la transferencia de masa ya es más rápida que la etapa superficial (reacción química o liberación del soluto), que pasa a controlar; la agitación no actúa sobre esa etapa.</li>
+      <li><b>0,35</b> (ii) 65 kJ/mol es típico de control químico, no de difusión en líquidos (≈ 10–25 kJ/mol), lo que confirma el control superficial a 600 rpm. A 100 rpm controla la capa límite y la energía de activación aparente sería baja, del orden de la de D (≈ 15–20 kJ/mol); se acepta cualquier valor bajo justificado.</li>
+      <li><b>0,30</b> (iii) Más agitación no sirve. Hay que acelerar la etapa superficial: subir la temperatura (el efecto es grande con 65 kJ/mol) o aumentar el área de reacción (moler más fino, más sólido por volumen). Se acepta también cambiar la química del lixiviante si se justifica.</li>
+    </ul>`;
+  });
+}
+})();
+</script>
+</body>
+</html>
